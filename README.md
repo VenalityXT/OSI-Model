@@ -1,4 +1,4 @@
-# OSI Model – Practical Networking and Security Reference
+<h1 align="center">OSI Model – Practical Networking and Security Reference</h1>
 
 The OSI (Open Systems Interconnection) Model is used to understand how data moves through a network by separating responsibilities into layers. Each layer builds on the one below it, adding structure and meaning until raw signals become usable applications.
 
