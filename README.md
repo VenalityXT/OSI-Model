@@ -2,7 +2,7 @@
 
 The OSI (Open Systems Interconnection) Model is used to understand how data moves through a network by separating responsibilities into layers. Each layer builds on the one below it, adding structure and meaning until raw signals become usable applications.
 
-In real environments, the OSI model is most useful as a **troubleshooting and security analysis framework**. Network engineers, SOC analysts, and security engineers rely on it to quickly narrow down where a problem or attack exists.
+In real environments, the OSI model is most useful as a **troubleshooting and security analysis framework**. Network engineers, SOC analysts, and security engineers rely on it to narrow down where a problem or attack exists instead of troubleshooting blindly.
 
 ---
 
@@ -12,28 +12,25 @@ In real environments, the OSI model is most useful as a **troubleshooting and se
 
 ---
 
-The Physical Layer covers the actual transmission of bits across physical media. It defines how data is moved electrically, optically, or wirelessly and provides the foundation that all higher layers rely on. This layer has no awareness of addresses, protocols, or applications.
+The Physical Layer handles the transmission of raw bits across a physical medium. It defines how data is moved electrically, optically, or wirelessly and provides the foundation that all higher layers rely on. At this stage, data has no structure or meaning.
 
 <img width="594" height="192" alt="image" src="https://github.com/user-attachments/assets/987f3a54-a121-4279-8a56-5e7d14800ab4" />
 
-If the physical layer is not functioning, nothing above it can operate.
+If this layer fails, communication stops entirely, regardless of how correct the configuration is above it.
 
-**Major Things to Know**
-- Cables, fiber, wireless signals
-- NICs, ports, link lights
-- Signal strength and interference
+**Key Things to Know**
+- Deals with signals, not data
+- Uses physical media (copper, fiber, wireless)
+- Involves NICs, ports, link lights, and signal strength
 
-**Real-World Examples**
-- pfSense or OPNsense interfaces showing link up/down status
-- Network switch port LEDs
-- Wireshark showing no packets at all due to no signal
+Packet capture tools will show no traffic at all if the signal never reaches the interface, which is why physical checks always come first during troubleshooting.
 
 **Common Problems | Simple Checks**
 
-Cable unplugged or damaged | Reseat or replace cable  
-No link light | Verify NIC, port, and power  
-Wrong media type | Confirm copper vs fiber compatibility  
-Wireless interference | Change channel or reposition AP  
+Cable unplugged or damaged | Reseat or replace the cable  
+No link light | Verify NIC, switch port, and power  
+Incorrect media type | Confirm copper vs fiber compatibility  
+Wireless interference | Change channel or reposition access point  
 
 ---
 
@@ -43,29 +40,26 @@ Wireless interference | Change channel or reposition AP
 
 ---
 
-The Data Link Layer enables communication between devices on the same local network. It builds on the physical signal by organizing data into frames and using MAC addresses to identify devices. Switches operate at this layer, forwarding traffic within a network segment.
+The Data Link Layer enables communication between devices on the same local network. It builds on the physical signal by framing data and using hardware identifiers so devices know where to send traffic locally.
 
 <img width="594" height="239" alt="image" src="https://github.com/user-attachments/assets/4bfb0fd0-8685-4a6f-81aa-aaf9afb72b56" />
 
-This layer is responsible for **local delivery before routing exists**.
+This layer allows higher layers to function without knowing anything about cables or voltages.
 
-**Major Things to Know**
-- MAC addresses (physical identifiers)
-- Ethernet frames
-- ARP (IP to MAC resolution)
-- VLAN segmentation
+**Key Things to Know**
+- Uses MAC addresses
+- Responsible for Ethernet frames
+- Handles ARP resolution
+- Supports VLAN segmentation
 
-**Real-World Examples**
-- pfSense or OPNsense ARP table
-- Managed switch VLAN configuration
-- Wireshark capturing ARP requests and replies
+Switches operate here, forwarding frames based on MAC addresses. When ARP fails, devices may know *where* to send traffic logically but not *how* to reach it physically.
 
 **Common Problems | Simple Checks**
 
-ARP not resolving | Clear ARP cache and verify IP mapping  
-Wrong VLAN | Check switch port VLAN assignment  
-Duplicate MAC | Inspect cloned VMs or misconfigured NICs  
-Connected but no traffic | Verify switch forwarding and VLANs  
+ARP not resolving | Clear ARP cache and verify IP-to-MAC mapping  
+Incorrect VLAN | Confirm switch port VLAN assignment  
+Duplicate MAC address | Check cloned virtual machines  
+Connected but no traffic | Verify switching and VLAN forwarding  
 
 ---
 
@@ -75,32 +69,26 @@ Connected but no traffic | Verify switch forwarding and VLANs
 
 ---
 
-The Network Layer introduces logical addressing and routing, allowing traffic to move between networks. It builds on Layer 2 by deciding where traffic should be forwarded once it leaves the local segment.
+The Network Layer introduces logical addressing and routing, allowing traffic to move between different networks. It builds on Layer 2 by deciding where packets should be forwarded once they leave the local segment.
 
 <img width="594" height="239" alt="image" src="https://github.com/user-attachments/assets/20dadd65-715e-49f2-a39a-e4538218fbdd" />
 
-This layer answers how packets move from one network to another.
+This is the first layer where traffic is no longer limited to the local network.
 
-**Major Things to Know**
-- IP addresses and subnetting
-- Routing tables
-- ICMP for diagnostics
+**Key Things to Know**
+- Uses IP addresses
+- Handles routing decisions
+- Supports subnetting and gateways
+- Uses ICMP for diagnostics
 
-**IPv4 vs IPv6**
-- IPv4 uses 32-bit addresses and commonly relies on NAT
-- IPv6 uses 128-bit addresses and provides globally unique addressing
-
-**Real-World Examples**
-- pfSense or OPNsense routing table
-- Firewall gateway configuration
-- Wireshark capturing ICMP echo requests and replies
+IPv4 uses 32-bit addresses and commonly relies on NAT, while IPv6 uses 128-bit addresses and enables globally unique addressing. Routers and firewalls rely on routing tables at this layer to move traffic correctly.
 
 **Common Problems | Simple Checks**
 
-Incorrect IP | Verify IP, subnet mask, and gateway  
+Incorrect IP configuration | Verify IP address, subnet mask, and gateway  
 Cannot reach other networks | Check routing table and default route  
-Ping fails | Ensure ICMP is allowed  
-IP conflict | Check DHCP leases and static assignments  
+Ping fails | Confirm ICMP is permitted  
+IP conflict | Review DHCP leases and static assignments  
 
 ---
 
@@ -110,32 +98,28 @@ IP conflict | Check DHCP leases and static assignments
 
 ---
 
-The Transport Layer manages end-to-end communication between systems. It builds on routing by ensuring data reaches the correct service on the destination host using ports and connection logic.
+The Transport Layer manages end-to-end communication between systems. It builds on routing by delivering data to the correct service on a host using ports and connection logic.
 
 <img width="594" height="239" alt="image" src="https://github.com/user-attachments/assets/812a0ac9-b481-43cc-9fa3-69cfbf2ae414" />
 
-This layer determines reliability and flow control.
+This layer defines how reliable or fast communication should be.
 
-**Major Things to Know**
-- Ports
-- TCP vs UDP
-- Connection states
+**Key Things to Know**
+- Uses port numbers
+- Supports TCP and UDP
+- Tracks connection state
 
-**TCP vs UDP**
-- TCP is reliable, ordered, and connection-based
-- UDP is faster, connectionless, and does not guarantee delivery
+TCP provides reliable, ordered delivery, while UDP prioritizes speed and low overhead. Firewalls commonly enforce policy at this layer by controlling which ports and protocols are allowed.
 
-**Real-World Examples**
-- pfSense or OPNsense firewall rules allowing or blocking ports
-- Wireshark capturing TCP handshakes
-- IDS alerts for port scans or SYN floods
+> [!NOTE]
+> Although IP addressing belongs to Layer 3, Layer 4 still depends on IP addresses to establish end-to-end communication between hosts.
 
 **Common Problems | Simple Checks**
 
-Service unreachable | Confirm correct port is open  
-Connection timeout | Check firewall rules and TCP state  
-Intermittent issues | Inspect retransmissions and packet loss  
-Port scan detected | Review firewall and IDS logs  
+Service unreachable | Verify the correct port is open  
+Connection timeout | Inspect firewall rules and transport state  
+Intermittent connectivity | Check retransmissions and packet loss  
+Unexpected scans | Review firewall and intrusion alerts  
 
 ---
 
@@ -145,28 +129,25 @@ Port scan detected | Review firewall and IDS logs
 
 ---
 
-The Session Layer manages session establishment, persistence, and teardown. It builds on the transport layer by maintaining continuity across multiple exchanges instead of treating each packet independently.
+The Session Layer maintains continuity between communicating systems. It builds on the transport layer by tracking session state across multiple exchanges rather than treating each packet independently.
 
 <img width="358" height="239" alt="image" src="https://github.com/user-attachments/assets/df9ed790-b99c-4337-8e7e-c06ed51539d3" />
 
-Issues at this layer often appear inconsistent rather than fully broken.
+Issues here often feel inconsistent and difficult to reproduce.
 
-**Major Things to Know**
-- Session tracking
-- Authentication persistence
-- Timeouts and keepalives
+**Key Things to Know**
+- Tracks session state
+- Manages authentication persistence
+- Controls timeouts and keepalives
 
-**Real-World Examples**
-- pfSense or OPNsense state tables
-- VPN session management
-- Wireshark tracking long-lived connections
+State tables and session tracking mechanisms help maintain long-lived connections such as VPNs and authenticated services.
 
 **Common Problems | Simple Checks**
 
 Session drops | Review timeout and keepalive settings  
-Repeated logins | Check session persistence  
-Random disconnects | Inspect state table behavior  
-Session reuse | Validate authentication tokens  
+Repeated authentication | Check session persistence configuration  
+Random disconnects | Inspect state tracking behavior  
+Session reuse | Validate authentication token handling  
 
 ---
 
@@ -176,26 +157,23 @@ Session reuse | Validate authentication tokens
 
 ---
 
-The Presentation Layer ensures data is formatted, encoded, and encrypted correctly. It builds on sessions by transforming data into a secure and usable format before it reaches the application.
+The Presentation Layer ensures data is formatted, encoded, and encrypted correctly before it reaches the application. It builds on sessions by transforming data into a secure and usable form.
 
 <img width="594" height="239" alt="image" src="https://github.com/user-attachments/assets/05c44300-6a59-42fd-ab6d-4b65a89f2554" />
 
-Encryption and encoding failures commonly surface here.
+Failures here often appear as application issues even when the service itself is functioning.
 
-**Major Things to Know**
-- TLS and SSL
-- Encryption and decryption
-- Encoding formats
+**Key Things to Know**
+- Handles encryption and decryption
+- Manages encoding and compression
+- Uses TLS and SSL
 
-**Real-World Examples**
-- HTTPS inspection in Wireshark
-- pfSense certificate management
-- TLS handshake errors in browser logs
+Encryption mismatches or certificate issues at this layer can prevent applications from functioning even though network connectivity is intact.
 
 **Common Problems | Simple Checks**
 
 Certificate error | Verify certificate chain and expiration  
-TLS failure | Check supported protocols and ciphers  
+TLS handshake failure | Check supported protocols and ciphers  
 Unreadable data | Confirm encoding compatibility  
 Encryption mismatch | Align client and server settings  
 
@@ -207,29 +185,33 @@ Encryption mismatch | Align client and server settings
 
 ---
 
-The Application Layer is where users and services interact with the network. It builds on all lower layers to provide usable functionality such as web access, email, file transfer, and APIs.
+The Application Layer is where users and services directly interact with the network. It builds on all lower layers to deliver usable functionality.
 
 <img width="661" height="239" alt="image" src="https://github.com/user-attachments/assets/9e64f0c5-4cdf-4fff-b585-4f616fd979ae" />
 
-Most visible issues occur here, even when the root cause exists below.
+Most visible failures occur here, but the root cause often exists lower in the stack.
 
-**Major Things to Know**
-- Application protocols (HTTP, DNS, SMTP, FTP)
-- Service logic
-- User authentication
+**Key Things to Know**
+- Uses application protocols (HTTP, DNS, SMTP, FTP)
+- Handles user interaction and service logic
+- Relies on all lower layers
 
-**Real-World Examples**
-- Web servers behind pfSense or OPNsense
-- DNS queries observed in Wireshark
-- Application logs indicating backend failures
+Understanding the OSI model prevents misdiagnosing application errors that are actually caused by transport, routing, or encryption failures.
 
 **Common Problems | Simple Checks**
 
-Website not loading | Check DNS and service status  
+Website not loading | Check DNS resolution and service status  
 Application error | Verify backend connectivity  
 Login failure | Review authentication and session handling  
-Slow performance | Inspect latency at lower layers  
+Poor performance | Inspect latency and transport behavior  
 
 ---
 
-Using the OSI model allows network and security professionals to troubleshoot logically, communicate clearly, and defend systems effectively. Each layer narrows the problem space until the true cause is identified.
+## Summary
+
+The OSI Model provides a structured way to understand how data moves through a network by separating complex communication processes into clearly defined layers. Rather than serving as a strict implementation guide, the model functions as a **mental framework** that allows networking and security professionals to reason about failures, attacks, and design decisions logically.
+
+By mapping real-world tools, protocols, and behaviors to each layer, this project demonstrates how the OSI model is applied during troubleshooting and security analysis. Physical issues are isolated before logical ones, local communication is validated before routing, and application errors are examined in the context of transport, encryption, and session handling.
+
+Understanding the OSI model in this way prevents misdiagnosis, reduces troubleshooting time, and improves communication between technical teams. When used correctly, it allows professionals to identify not just *what* is failing, but *where* and *why* the failure is occurring.
+
