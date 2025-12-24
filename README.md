@@ -25,12 +25,12 @@ If this layer fails, communication stops entirely, regardless of how correct the
 
 Packet capture tools will show no traffic at all if the signal never reaches the interface, which is why physical checks always come first during troubleshooting.
 
-**Common Problems | Simple Checks**
+**Troubleshooting Warning Signs & Actions**
 
-Cable unplugged or damaged -> Reseat or replace the cable  
-No link light          -> Verify NIC, switch port, and power  
-Incorrect media type   -> Confirm copper vs fiber compatibility  
-Wireless interference  -> Change channel or reposition access point  
+**Cable unplugged or damaged** -> Reseat or replace the cable  
+**No link light** -> Verify NIC, switch port, and power  
+**Incorrect media type** -> Confirm copper vs fiber compatibility  
+**Wireless interference** -> Change channel or reposition access point  
 
 ---
 
@@ -54,12 +54,12 @@ This layer allows higher layers to function without knowing anything about cable
 
 Switches operate here, forwarding frames based on MAC addresses. When ARP fails, devices may know *where* to send traffic logically but not *how* to reach it physically.
 
-**Common Problems | Simple Checks**
+**Troubleshooting Warning Signs & Actions**
 
-ARP not resolving | Clear ARP cache and verify IP-to-MAC mapping  
-Incorrect VLAN | Confirm switch port VLAN assignment  
-Duplicate MAC address | Check cloned virtual machines  
-Connected but no traffic | Verify switching and VLAN forwarding  
+**ARP requests with no reply** -> Clear ARP cache and verify IP-to-MAC mapping  
+**Device on wrong VLAN** -> Confirm switch port VLAN assignment  
+**Duplicate MAC address** -> Check cloned virtual machines or misconfigured NICs  
+**Connected but no traffic** -> Verify switching behavior and VLAN forwarding  
 
 ---
 
@@ -81,14 +81,14 @@ This is the first layer where traffic is no longer limited to the local network.
 - Supports subnetting and gateways
 - Uses ICMP for diagnostics
 
-IPv4 uses 32-bit addresses and commonly relies on NAT, while IPv6 uses 128-bit addresses and enables globally unique addressing. Routers and firewalls rely on routing tables at this layer to move traffic correctly.
+IPv4 uses 32-bit addresses and commonly relies on NAT, while IPv6 uses 128-bit addresses and enables globally unique addressing.
 
-**Common Problems | Simple Checks**
+**Troubleshooting Warning Signs & Actions**
 
-Incorrect IP configuration | Verify IP address, subnet mask, and gateway  
-Cannot reach other networks | Check routing table and default route  
-Ping fails | Confirm ICMP is permitted  
-IP conflict | Review DHCP leases and static assignments  
+**Incorrect IP configuration** -> Verify IP address, subnet mask, and gateway  
+**Cannot reach other networks** -> Check routing table and default route  
+**Ping fails** -> Confirm ICMP is permitted  
+**IP conflict detected** -> Review DHCP leases and static assignments  
 
 ---
 
@@ -109,17 +109,17 @@ This layer defines how reliable or fast communication should be.
 - Supports TCP and UDP
 - Tracks connection state
 
-TCP provides reliable, ordered delivery, while UDP prioritizes speed and low overhead. Firewalls commonly enforce policy at this layer by controlling which ports and protocols are allowed.
+TCP provides reliable, ordered delivery, while UDP prioritizes speed and low overhead.
 
 > [!NOTE]
-> Although IP addressing belongs to Layer 3, Layer 4 still depends on IP addresses to establish end-to-end communication between hosts.
+> Although IP addressing belongs to Layer 3, Layer 4 still relies on IP addresses to establish end-to-end communication between hosts.
 
-**Common Problems | Simple Checks**
+**Troubleshooting Warning Signs & Actions**
 
-Service unreachable | Verify the correct port is open  
-Connection timeout | Inspect firewall rules and transport state  
-Intermittent connectivity | Check retransmissions and packet loss  
-Unexpected scans | Review firewall and intrusion alerts  
+**Service unreachable** -> Verify the correct port is open  
+**Connection timeout** -> Inspect firewall rules and transport state  
+**Intermittent connectivity** -> Check retransmissions and packet loss  
+**Unexpected scans detected** -> Review firewall and intrusion alerts  
 
 ---
 
@@ -140,14 +140,12 @@ Issues here often feel inconsistent and difficult to reproduce.
 - Manages authentication persistence
 - Controls timeouts and keepalives
 
-State tables and session tracking mechanisms help maintain long-lived connections such as VPNs and authenticated services.
+**Troubleshooting Warning Signs & Actions**
 
-**Common Problems | Simple Checks**
-
-Session drops | Review timeout and keepalive settings  
-Repeated authentication | Check session persistence configuration  
-Random disconnects | Inspect state tracking behavior  
-Session reuse | Validate authentication token handling  
+**Session drops unexpectedly** -> Review timeout and keepalive settings  
+**Repeated authentication prompts** -> Check session persistence configuration  
+**Random disconnects** -> Inspect state tracking behavior  
+**Session reuse observed** -> Validate authentication token handling  
 
 ---
 
@@ -168,14 +166,12 @@ Failures here often appear as application issues even when the service itself is
 - Manages encoding and compression
 - Uses TLS and SSL
 
-Encryption mismatches or certificate issues at this layer can prevent applications from functioning even though network connectivity is intact.
+**Troubleshooting Warning Signs & Actions**
 
-**Common Problems | Simple Checks**
-
-Certificate error | Verify certificate chain and expiration  
-TLS handshake failure | Check supported protocols and ciphers  
-Unreadable data | Confirm encoding compatibility  
-Encryption mismatch | Align client and server settings  
+**Certificate error displayed** -> Verify certificate chain and expiration  
+**TLS handshake failure** -> Check supported protocols and cipher suites  
+**Unreadable or garbled data** -> Confirm encoding compatibility  
+**Encryption mismatch** -> Align client and server security settings  
 
 ---
 
@@ -196,14 +192,12 @@ Most visible failures occur here, but the root cause often exists lower in the s
 - Handles user interaction and service logic
 - Relies on all lower layers
 
-Understanding the OSI model prevents misdiagnosing application errors that are actually caused by transport, routing, or encryption failures.
+**Troubleshooting Warning Signs & Actions**
 
-**Common Problems | Simple Checks**
-
-Website not loading | Check DNS resolution and service status  
-Application error | Verify backend connectivity  
-Login failure | Review authentication and session handling  
-Poor performance | Inspect latency and transport behavior  
+**Website not loading** -> Check DNS resolution and service status  
+**Application error displayed** -> Verify backend connectivity  
+**Login failure** -> Review authentication and session handling  
+**Poor performance** -> Inspect latency and transport behavior  
 
 ---
 
@@ -211,7 +205,4 @@ Poor performance | Inspect latency and transport behavior
 
 The OSI Model provides a structured way to understand how data moves through a network by separating complex communication processes into clearly defined layers. Rather than serving as a strict implementation guide, the model functions as a **mental framework** that allows networking and security professionals to reason about failures, attacks, and design decisions logically.
 
-By mapping real-world tools, protocols, and behaviors to each layer, this project demonstrates how the OSI model is applied during troubleshooting and security analysis. Physical issues are isolated before logical ones, local communication is validated before routing, and application errors are examined in the context of transport, encryption, and session handling.
-
-Understanding the OSI model in this way prevents misdiagnosis, reduces troubleshooting time, and improves communication between technical teams. When used correctly, it allows professionals to identify not just *what* is failing, but *where* and *why* the failure is occurring.
-
+By isolating issues layer by layer, professionals can quickly determine whether a problem originates from physical connectivity, local network communication, routing, transport behavior, encryption, or application logic. This approach reduces misdiagnosis, shortens troubleshooting time, and improves communication between technical teams by providing a shared language for analysis.
