@@ -27,10 +27,10 @@ Packet capture tools will show no traffic at all if the signal never reaches the
 
 **Common Problems | Simple Checks**
 
-Cable unplugged or damaged | Reseat or replace the cable  
-No link light | Verify NIC, switch port, and power  
-Incorrect media type | Confirm copper vs fiber compatibility  
-Wireless interference | Change channel or reposition access point  
+Cable unplugged or damaged -> Reseat or replace the cable  
+No link light          -> Verify NIC, switch port, and power  
+Incorrect media type   -> Confirm copper vs fiber compatibility  
+Wireless interference  -> Change channel or reposition access point  
 
 ---
 
